@@ -1,5 +1,7 @@
 # Lumina Logistics
 
+🚀 Live Demo: [Lumina Logistics](https://lumina-logistics-ten.vercel.app/)
+
 **Smart AI-Powered Shipment & Delivery Management Platform**
 
 A full-stack MERN application for booking, tracking, and managing logistics operations — built as a placement-worthy portfolio project with realistic AI features, role-based dashboards, and real-time updates.
