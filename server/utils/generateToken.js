@@ -11,8 +11,8 @@ export const sendTokenResponse = (user, statusCode, res) => {
   const options = {
     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    secure: true, // Always true for production (HTTPS)
+    sameSite: 'none', // Required for cross-origin cookies
   };
   
   res
@@ -29,8 +29,8 @@ export const sendTokenAndRedirect = (user, res) => {
   const options = {
     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    secure: true, // Always true for production (HTTPS)
+    sameSite: 'none', // Required for cross-origin cookies
   };
   
   // Set cookie and redirect to frontend callback

@@ -33,7 +33,8 @@ const io = new Server(server, {
   cors: { origin: process.env.CLIENT_URL || 'http://localhost:5173', credentials: true },
 });
 app.set('io', io);
-app.set('trust proxy', true);
+// Fix trust proxy for Render - specify number of proxy hops
+app.set('trust proxy', 1);
 initSockets(io);
 
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
@@ -41,6 +42,8 @@ app.use(
   cors({
     origin: process.env.CLIENT_URL || 'http://localhost:5173',
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 app.use(express.json({ limit: '10mb' }));
@@ -49,7 +52,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(mongoSanitize());
 
-const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 200 });
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  // Trust proxy for Render to get correct IP
+  trustProxy: true,
+});
 app.use('/api', limiter);
 
 app.get('/api/health', (req, res) => res.json({ success: true, message: 'Lumina Logistics API is running' }));
