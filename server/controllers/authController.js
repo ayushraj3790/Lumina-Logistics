@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import User from '../models/User.js';
-import { sendTokenResponse } from '../utils/generateToken.js';
+import { sendTokenResponse, sendTokenAndRedirect } from '../utils/generateToken.js';
 import { sendEmail } from '../utils/sendEmail.js';
 
 export const register = async (req, res) => {
@@ -12,7 +12,9 @@ export const register = async (req, res) => {
   const userRole = allowedRoles.includes(role) ? role : 'customer';
 
   const verificationToken = crypto.randomBytes(20).toString('hex');
-  const user = await User.create({
+  
+  // Set driver status to pending if role is driver
+  const userData = {
     name,
     email,
     password,
@@ -20,7 +22,13 @@ export const register = async (req, res) => {
     phone,
     verificationToken,
     verificationExpire: Date.now() + 24 * 60 * 60 * 1000,
-  });
+  };
+  
+  if (userRole === 'driver') {
+    userData.driverStatus = 'pending';
+  }
+
+  const user = await User.create(userData);
 
   const verifyUrl = `${process.env.CLIENT_URL}/verify-email/${verificationToken}`;
   await sendEmail({
@@ -39,11 +47,28 @@ export const login = async (req, res) => {
   if (!user || !(await user.matchPassword(password))) {
     return res.status(401).json({ success: false, message: 'Invalid credentials' });
   }
+  
+  // Check if driver is approved
+  if (user.role === 'driver' && user.driverStatus !== 'approved') {
+    let message = 'Your account is waiting for admin approval.';
+    if (user.driverStatus === 'rejected') {
+      message = `Your driver application was rejected. Reason: ${user.driverRejectionReason || 'Not specified'}`;
+    } else if (user.driverStatus === 'suspended') {
+      message = 'Your driver account has been suspended. Please contact support.';
+    }
+    return res.status(403).json({ success: false, message, driverStatus: user.driverStatus });
+  }
+  
   sendTokenResponse(user, 200, res);
 };
 
 export const logout = (req, res) => {
-  res.cookie('token', '', { expires: new Date(0), httpOnly: true });
+  res.cookie('token', '', { 
+    expires: new Date(0), 
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  });
   res.json({ success: true, message: 'Logged out' });
 };
 
@@ -96,4 +121,8 @@ export const updateProfile = async (req, res) => {
   }
   await req.user.save();
   res.json({ success: true, user: req.user });
+};
+
+export const googleCallback = (req, res) => {
+  sendTokenAndRedirect(req.user, res);
 };

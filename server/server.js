@@ -7,6 +7,7 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import mongoSanitize from 'express-mongo-sanitize';
 import rateLimit from 'express-rate-limit';
+import passport from './config/googleAuth.js';
 import { connectDB } from './config/db.js';
 import { configureCloudinary } from './config/cloudinary.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
@@ -20,6 +21,8 @@ import warehouseRoutes from './routes/warehouseRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
+import driverApplicationRoutes from './routes/driverApplicationRoutes.js';
+import uploadRoutes from './routes/uploadRoutes.js';
 
 connectDB();
 configureCloudinary();
@@ -41,6 +44,7 @@ app.use(
   })
 );
 app.use(express.json({ limit: '10mb' }));
+app.use(passport.initialize());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(mongoSanitize());
@@ -58,6 +62,8 @@ app.use('/api/warehouse', warehouseRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/driver-applications', driverApplicationRoutes);
+app.use('/api/upload', uploadRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

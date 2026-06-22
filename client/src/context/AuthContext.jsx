@@ -11,36 +11,35 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      authAPI
-        .getMe()
-        .then((res) => {
-          setUser(res.data.user);
-          localStorage.setItem('user', JSON.stringify(res.data.user));
-        })
-        .catch(() => {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          setUser(null);
-        })
-        .finally(() => setLoading(false));
-    } else setLoading(false);
+    // Check if user is authenticated by calling /api/auth/me
+    authAPI
+      .getMe()
+      .then((res) => {
+        setUser(res.data.user);
+        localStorage.setItem('user', JSON.stringify(res.data.user));
+      })
+      .catch(() => {
+        setUser(null);
+        localStorage.removeItem('user');
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const login = async (email, password) => {
-    const { data } = await authAPI.login({ email, password });
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
+    await authAPI.login({ email, password });
+    // After login, fetch user from /api/auth/me
+    const { data } = await authAPI.getMe();
     setUser(data.user);
+    localStorage.setItem('user', JSON.stringify(data.user));
     return data.user;
   };
 
   const register = async (formData) => {
-    const { data } = await authAPI.register(formData);
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
+    await authAPI.register(formData);
+    // After register, fetch user from /api/auth/me
+    const { data } = await authAPI.getMe();
     setUser(data.user);
+    localStorage.setItem('user', JSON.stringify(data.user));
     return data.user;
   };
 
@@ -48,13 +47,20 @@ export const AuthProvider = ({ children }) => {
     try {
       await authAPI.logout();
     } catch {}
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
     setUser(null);
+    localStorage.removeItem('user');
+  };
+
+  const handleGoogleCallback = async () => {
+    // Fetch user from /api/auth/me after Google OAuth
+    const { data } = await authAPI.getMe();
+    setUser(data.user);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    return data.user;
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, setUser, loading, login, register, logout, handleGoogleCallback }}>
       {children}
     </AuthContext.Provider>
   );

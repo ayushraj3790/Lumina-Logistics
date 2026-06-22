@@ -8,9 +8,11 @@ import { ROLE_DASHBOARD } from './utils/constants';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
+import DriverRegisterPage from './pages/auth/DriverRegisterPage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import VerifyEmailPage from './pages/auth/VerifyEmailPage';
+import GoogleCallback from './pages/auth/GoogleCallback';
 import TrackPage from './pages/TrackPage';
 
 import CustomerDashboard from './pages/customer/CustomerDashboard';
@@ -28,6 +30,7 @@ import AdminShipments from './pages/admin/AdminShipments';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminAnalytics from './pages/admin/AdminAnalytics';
 import AdminWarehouses from './pages/admin/AdminWarehouses';
+import AdminDriverApplications from './pages/admin/AdminDriverApplications';
 
 import WarehouseDashboard from './pages/warehouse/WarehouseDashboard';
 import WarehouseScan from './pages/warehouse/WarehouseScan';
@@ -46,9 +49,11 @@ export default function App() {
       <Route path="/" element={<HomeRedirect />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/register/driver" element={<DriverRegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
       <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
+      <Route path="/auth/google/callback" element={<GoogleCallback />} />
       <Route path="/track" element={<TrackPage />} />
       <Route path="/track/:trackingId" element={<TrackPage />} />
 
@@ -75,6 +80,7 @@ export default function App() {
         <Route path="admin/users" element={<ProtectedRoute roles={['admin']}><AdminUsers /></ProtectedRoute>} />
         <Route path="admin/analytics" element={<ProtectedRoute roles={['admin']}><AdminAnalytics /></ProtectedRoute>} />
         <Route path="admin/warehouses" element={<ProtectedRoute roles={['admin']}><AdminWarehouses /></ProtectedRoute>} />
+        <Route path="admin/driver-applications" element={<ProtectedRoute roles={['admin']}><AdminDriverApplications /></ProtectedRoute>} />
 
         <Route path="warehouse" element={<ProtectedRoute roles={['warehouse']}><WarehouseDashboard /></ProtectedRoute>} />
         <Route path="warehouse/scan" element={<ProtectedRoute roles={['warehouse']}><WarehouseScan /></ProtectedRoute>} />

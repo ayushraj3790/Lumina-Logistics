@@ -33,13 +33,17 @@ export default function RegisterPage() {
           <input className="input-field" type="email" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
           <input className="input-field" placeholder="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
           <input className="input-field" type="password" placeholder="Password (min 6)" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
-          <select className="input-field" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
-            <option value="customer">Customer</option>
-            <option value="driver">Driver</option>
-          </select>
-          <button type="submit" className="btn-primary w-full" disabled={loading}>{loading ? 'Creating...' : 'Register'}</button>
+          <button type="submit" className="btn-primary w-full" disabled={loading}>{loading ? 'Creating...' : 'Register as Customer'}</button>
         </form>
-        <p className="mt-6 text-center text-sm">Have an account? <Link to="/login" className="text-lumina-600">Login</Link></p>
+        
+        <div className="mt-6 text-center">
+          <p className="text-sm text-slate-400 mb-2">Want to register as a driver?</p>
+          <Link to="/register/driver" className="text-lumina-600 font-medium hover:underline">
+            Apply as Driver →
+          </Link>
+        </div>
+        
+        <p className="mt-4 text-center text-sm">Have an account? <Link to="/login" className="text-lumina-600">Login</Link></p>
       </div>
     </div>
   );

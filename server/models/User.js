@@ -11,7 +11,8 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-    password: { type: String, required: [true, 'Password is required'], minlength: 6, select: false },
+    password: { type: String, required: false, minlength: 6, select: false },
+    googleId: { type: String, unique: true, sparse: true },
     role: {
       type: String,
       enum: ['customer', 'driver', 'admin', 'warehouse'],
@@ -25,6 +26,15 @@ const userSchema = new mongoose.Schema(
     resetPasswordToken: String,
     resetPasswordExpire: Date,
     isActive: { type: Boolean, default: true },
+    // Driver approval status
+    driverStatus: {
+      type: String,
+      enum: ['pending', 'under_review', 'approved', 'rejected', 'suspended'],
+      default: null,
+    },
+    driverRejectionReason: { type: String },
+    driverReviewedAt: { type: Date },
+    driverReviewedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     // Driver-specific fields
     driverProfile: {
       licenseNumber: String,

@@ -1,4 +1,5 @@
 import express from 'express';
+import passport from '../config/googleAuth.js';
 import {
   register,
   login,
@@ -8,6 +9,7 @@ import {
   resetPassword,
   verifyEmail,
   updateProfile,
+  googleCallback,
 } from '../controllers/authController.js';
 import { protect } from '../middleware/auth.js';
 
@@ -20,5 +22,9 @@ router.post('/forgot-password', forgotPassword);
 router.put('/reset-password/:token', resetPassword);
 router.get('/verify-email/:token', verifyEmail);
 router.put('/profile', protect, updateProfile);
+
+// Google OAuth routes
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google/callback', passport.authenticate('google', { session: false }), googleCallback);
 
 export default router;

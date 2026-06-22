@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
 import { shipmentAPI } from '../services/api';
 import StatusBadge from '../components/ui/StatusBadge';
-import ShipmentMap from '../components/map/ShipmentMap';
+import GoogleLiveMap from '../components/map/GoogleLiveMap';
 import { STATUS_ORDER } from '../utils/constants';
 import { formatDate, formatCurrency } from '../utils/format';
 import Navbar from '../components/landing/Navbar';
@@ -118,10 +118,12 @@ export default function TrackPage() {
               </div>
             )}
 
-            <ShipmentMap
-              pickup={shipment.sender?.location}
-              drop={shipment.receiver?.location}
-              current={shipment.currentLocation}
+            <GoogleLiveMap
+              shipment={{
+                pickup: shipment.sender?.location,
+                drop: shipment.receiver?.location,
+              }}
+              driverLocation={shipment.currentLocation}
             />
 
             <div className="card">
